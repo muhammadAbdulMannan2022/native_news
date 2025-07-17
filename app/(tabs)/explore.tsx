@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import Constants from "expo-constants";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -10,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 type NewsItem = {
   article_id: string;
   title: string;
@@ -18,7 +18,7 @@ type NewsItem = {
   image_url?: string;
 };
 
-const NEWS_API_KEY = "Your api";
+
 
 export default function ExploreNewsScreen() {
   const [query, setQuery] = useState("");
@@ -32,7 +32,8 @@ export default function ExploreNewsScreen() {
     try {
       const safeQuery = encodeURIComponent(query.trim());
       const res = await fetch(
-        `https://newsdata.io/api/1/latest?apikey=${NEWS_API_KEY}&q=${safeQuery}&country=bd&language=en`
+        `https://newsdata.io/api/1/latest?apikey=${Constants.expoConfig.extra.NEWS_API_KEY}&q=${safeQuery}&country=bd&language=bn
+        `
       );
       const data = await res.json();
       setArticles(data.results || []);
