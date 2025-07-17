@@ -1,0 +1,102 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+type NewsItem = {
+  article_id: string;
+  title: string;
+  pubDate?: string;
+  image_url?: string;
+};
+
+const NEWS_API_KEY = "Your api";
+
+export default function ExploreNewsScreen() {
+  const [query, setQuery] = useState("");
+  const [articles, setArticles] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const searchNews = async () => {
+    if (!query.trim()) return;
+    Keyboard.dismiss();
+    setLoading(true);
+    try {
+      const safeQuery = encodeURIComponent(query.trim());
+      const res = await fetch(
+        `https://newsdata.io/api/1/latest?apikey=${NEWS_API_KEY}&q=${safeQuery}&country=bd&language=en`
+      );
+      const data = await res.json();
+      setArticles(data.results || []);
+    } catch (e) {
+      console.error("Search error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View className="flex-1 px-4 pt-12 bg-black">
+      <Text className="text-2xl font-bold mb-4 mt-4 text-center text-gray-200">
+        Search News
+      </Text>
+
+      <View className="flex-row items-center mb-4 bg-gray-800 rounded-full px-4 py-2">
+        <Ionicons name="search" size={20} color="white" />
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search something..."
+          placeholderTextColor="#aaa"
+          onSubmitEditing={searchNews}
+          className="flex-1 ml-2 text-white"
+        />
+        {query.length > 0 && (
+          <TouchableOpacity onPress={() => setQuery("")}>
+            <Ionicons name="close-circle" size={20} color="white" />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#22d3ee" />
+      ) : (
+        <FlatList
+          data={articles}
+          keyExtractor={(item) => item.article_id}
+          renderItem={({ item }) => (
+            <View className="mb-4 p-4 rounded-2xl shadow bg-gray-800">
+              {item.image_url && (
+                <Image
+                  source={{ uri: item.image_url }}
+                  className="w-full h-48 rounded-xl mb-3"
+                  resizeMode="cover"
+                />
+              )}
+              <Text className="text-lg font-semibold mb-1 text-gray-200">
+                {item.title}
+              </Text>
+              <Text className="text-sm text-gray-400">
+                {item.pubDate?.split(" ")[0] || ""}
+              </Text>
+            </View>
+          )}
+          ListEmptyComponent={
+            query.length > 0 && !loading ? (
+              <Text className="text-center text-gray-500 mt-8">No results found.</Text>
+            ) : null
+          }
+        />
+      )}
+    </View>
+  );
+}
+
