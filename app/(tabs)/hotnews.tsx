@@ -11,6 +11,8 @@ type NewsItem = {
   image_url?: string;
   [key: string]: any;
 };
+const apiKey = Constants.expoConfig?.extra?.NEWS_API_KEY;
+
 
 export default function HotNewsScreen() {
   const [articles, setArticles] = useState<NewsItem[]>([]);
@@ -20,7 +22,7 @@ export default function HotNewsScreen() {
     const fetchHotNews = async () => {
       try {
         const res = await fetch(
-          `https://newsdata.io/api/1/latest?apikey=${Constants.expoConfig.extra.NEWS_API_KEY}&country=bd&language=bn`
+          `https://newsdata.io/api/1/latest?apikey=${apiKey}&country=bd&language=bn`
         );
         const data = await res.json();
         setArticles(data.results || []);

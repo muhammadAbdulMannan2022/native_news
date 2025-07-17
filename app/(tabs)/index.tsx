@@ -9,13 +9,15 @@ type NewsItem = {
   image_url?: string;
   [key: string]: any;
 };
+const apiKey = Constants.expoConfig?.extra?.NEWS_API_KEY;
+
 export default function AllNewsScreen() {
   const [articles, setArticles] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(
-      `https://newsdata.io/api/1/latest?apikey=${Constants.expoConfig.extra.NEWS_API_KEY}&country=bd&language=bn`
+      `https://newsdata.io/api/1/latest?apikey=${apiKey}&country=bd&language=bn`
     )
       .then((res) => res.json())
       .then((data) => {

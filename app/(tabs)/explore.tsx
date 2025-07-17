@@ -19,6 +19,7 @@ type NewsItem = {
 };
 
 
+const apiKey = Constants.expoConfig?.extra?.NEWS_API_KEY;
 
 export default function ExploreNewsScreen() {
   const [query, setQuery] = useState("");
@@ -32,7 +33,7 @@ export default function ExploreNewsScreen() {
     try {
       const safeQuery = encodeURIComponent(query.trim());
       const res = await fetch(
-        `https://newsdata.io/api/1/latest?apikey=${Constants.expoConfig.extra.NEWS_API_KEY}&q=${safeQuery}&country=bd&language=bn
+        `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${safeQuery}&country=bd&language=bn
         `
       );
       const data = await res.json();
