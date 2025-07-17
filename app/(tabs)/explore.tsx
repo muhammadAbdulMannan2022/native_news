@@ -11,13 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 type NewsItem = {
   article_id: string;
   title: string;
   pubDate?: string;
   image_url?: string;
 };
-
 
 const apiKey = Constants.expoConfig?.extra?.NEWS_API_KEY;
 
@@ -33,11 +33,18 @@ export default function ExploreNewsScreen() {
     try {
       const safeQuery = encodeURIComponent(query.trim());
       const res = await fetch(
-        `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${safeQuery}&country=bd&language=bn
-        `
+        `https://newsapi.org/v2/everything?q=${safeQuery}&language=en&sortBy=publishedAt&apiKey=${apiKey}`
       );
       const data = await res.json();
-      setArticles(data.results || []);
+
+      const mapped = (data.articles || []).map((item: any, index: number) => ({
+        article_id: item.url || index.toString(),
+        title: item.title,
+        pubDate: item.publishedAt,
+        image_url: item.urlToImage,
+      }));
+
+      setArticles(mapped);
     } catch (e) {
       console.error("Search error:", e);
     } finally {
@@ -87,7 +94,7 @@ export default function ExploreNewsScreen() {
                 {item.title}
               </Text>
               <Text className="text-sm text-gray-400">
-                {item.pubDate?.split(" ")[0] || ""}
+                {item.pubDate?.split("T")[0] || ""}
               </Text>
             </View>
           )}
@@ -101,4 +108,3 @@ export default function ExploreNewsScreen() {
     </View>
   );
 }
-
